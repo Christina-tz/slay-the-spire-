@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
@@ -403,13 +403,13 @@ function makeCard(s) {
         : '';
     const canDelete = currentUserId && s.user_id === currentUserId;
     const deleteBtn = canDelete 
-        ? '<span class="btn-delete" onclick="deleteSeed(event, '+s.id+')">🗑 删除</span>' 
+        ? '<span class="btn-delete" onclick="event.stopPropagation();deleteSeed(event,'+s.id+')">🗑 删除</span>' 
         : '';
-    return '<button class="seed-card" data-id="'+s.id+'" data-user-id="'+(s.user_id||'')+'" data-seed="'+s.seed+'" data-game="'+s.game+'" onclick="viewSeed(this.dataset.seed)">' +
+    return '<div class="seed-card" data-id="'+s.id+'" data-user-id="'+(s.user_id||'')+'" data-seed="'+s.seed+'" data-game="'+s.game+'" onclick="viewSeed(this.dataset.seed);return false">' +
         '<div class="card-top"><div class="char-difficulty"><span class="char-badge">'+cl+'</span><span class="diff-badge">'+diff+'</span></div><span class="hudu '+huduClass+'">'+hudu+'</span>'+deleteBtn+'</div>' +
         '<div class="seed-seed"><span class="seed-num">'+s.seed+'</span><span class="btn-copy" onclick="copySeed(event, this.parentElement.parentElement.dataset.seed)">📋 复制</span></div>' +
         tagsHtml + descHtml +
-        '<div class="meta">'+s.game + (s.floor ? ' · '+s.floor+'层' : '')+'</div></button>';
+        '<div class="meta">'+s.game + (s.floor ? ' · '+s.floor+'层' : '')+'</div></div>';
 }
 
 function render(containerId, arr) {
@@ -536,6 +536,7 @@ function showToast(msg) {
 async function deleteSeed(event, id) {
     event.stopPropagation();
     event.preventDefault();
+    return false;
     if (!_sbReady) { showToast('系统加载中，请稍候'); return; }
     if (!confirm('确定要删除这个种子吗？')) return;
     const { error } = await _sbClient.from('seeds').delete().eq('id', id);
