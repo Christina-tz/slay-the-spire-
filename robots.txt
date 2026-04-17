@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://slay-the-spire-psi.vercel.app/sitemap.xml
