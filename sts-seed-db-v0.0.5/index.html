@@ -636,6 +636,7 @@ function showToast(msg) {
 }
 
 async function deleteSeed(event, id) {
+    if (!event) event = { stopPropagation: function() {} };
     event.stopPropagation();
     if (!_sbReady) { showToast('系统加载中，请稍候'); return; }
     if (!confirm('确定要删除这个种子吗？')) return;
