@@ -636,8 +636,10 @@ function showToast(msg) {
 }
 
 async function deleteSeed(event, id) {
+    console.log('[DELETE] Called with id:', id, 'event:', event);
     if (!event) event = { stopPropagation: function() {} };
     event.stopPropagation();
+    console.log('[DELETE] _sbReady:', _sbReady, 'currentUserId:', currentUserId);
     if (!_sbReady) { showToast('系统加载中，请稍候'); return; }
     if (!confirm('确定要删除这个种子吗？')) return;
     const { error } = await _sbClient.from('seeds').delete().eq('id', id);
@@ -908,6 +910,7 @@ async function logout() {
 // 事件委托：拦截删除按钮点击（彻底解决事件冒泡问题）
 document.addEventListener('click', function(e) {
   var del = e.target.closest ? e.target.closest('.btn-delete') : null;
+  console.log('[CLICK] target:', e.target, 'closest btn-delete:', del);
   if (del) {
     e.preventDefault();
     e.stopPropagation();
