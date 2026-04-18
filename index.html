@@ -471,7 +471,8 @@ function makeCard(s) {
     const descHtml = s.description 
         ? '<div class="description">'+s.description.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>' 
         : '';
-    const canDelete = currentUserId && s.user_id === currentUserId;
+    const isUUID = s.id && typeof s.id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-/.test(s.id);
+    const canDelete = currentUserId && s.user_id === currentUserId && isUUID;
     const deleteBtn = canDelete ? '<span class="btn-delete" data-id="'+s.id+'">🗑 删除</span>' 
         : '';
     return '<div class="seed-card" data-id="'+s.id+'" data-user-id="'+(s.user_id||'')+'" data-seed="'+s.seed+'" data-game="'+s.game+'" onclick="viewSeed(this.dataset.seed)">' +
@@ -640,8 +641,11 @@ async function deleteSeed(event, id) {
     event.stopPropagation();
     if (!_sbReady) { showToast('系统加载中，请稍候'); return; }
     if (!confirm('确定要删除这个种子吗？')) return;
+    console.log('[DELETE] Attempting to delete id:', id);
     const { error } = await _sbClient.from('seeds').delete().eq('id', id);
+    console.log('[DELETE] Error:', error);
     if (error) { showToast('删除失败：' + error.message); return; }
+    console.log('[DELETE] Success, reloading...');
     await loadSeedsFromDB();
     showToast('已删除');
 }
