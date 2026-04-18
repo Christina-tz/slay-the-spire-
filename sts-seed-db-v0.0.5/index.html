@@ -471,7 +471,8 @@ function makeCard(s) {
     const descHtml = s.description 
         ? '<div class="description">'+s.description.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>' 
         : '';
-    const canDelete = currentUserId && s.user_id === currentUserId;
+    const isUUID = s.id && typeof s.id === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-/.test(s.id);
+    const canDelete = currentUserId && s.user_id === currentUserId && isUUID;
     const deleteBtn = canDelete ? '<span class="btn-delete" data-id="'+s.id+'">🗑 删除</span>' 
         : '';
     return '<div class="seed-card" data-id="'+s.id+'" data-user-id="'+(s.user_id||'')+'" data-seed="'+s.seed+'" data-game="'+s.game+'" onclick="viewSeed(this.dataset.seed)">' +
@@ -636,10 +637,8 @@ function showToast(msg) {
 }
 
 async function deleteSeed(event, id) {
-    console.log('[DELETE] Called with id:', id, 'event:', event);
     if (!event) event = { stopPropagation: function() {} };
     event.stopPropagation();
-    console.log('[DELETE] _sbReady:', _sbReady, 'currentUserId:', currentUserId);
     if (!_sbReady) { showToast('系统加载中，请稍候'); return; }
     if (!confirm('确定要删除这个种子吗？')) return;
     const { error } = await _sbClient.from('seeds').delete().eq('id', id);
@@ -910,11 +909,10 @@ async function logout() {
 // 事件委托：拦截删除按钮点击（彻底解决事件冒泡问题）
 document.addEventListener('click', function(e) {
   var del = e.target.closest ? e.target.closest('.btn-delete') : null;
-  console.log('[CLICK] target:', e.target, 'closest btn-delete:', del);
   if (del) {
     e.preventDefault();
     e.stopPropagation();
-    var id = del.dataset.id ? parseInt(del.dataset.id) : null;
+    var id = del.dataset.id;
     if (id) deleteSeed(null, id);
   }
 });
