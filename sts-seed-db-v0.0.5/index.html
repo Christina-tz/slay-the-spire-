@@ -524,6 +524,7 @@ async function loadSeedsFromDB() {
  floor: row.floor_reached || 0,
  victory: row.victory || false,
  ascension: row.ascension || 0,
+ difficulty: row.difficulty || ('A' + (row.ascension || 0)),
  tags: row.tags || [],
  description: row.description || ''
  }));
@@ -666,10 +667,16 @@ function showMySeeds() {
  currentGame = 'all';
  currentFilter = 'all';
  currentChar = '';
+ // 重置所有筛选按钮的 active 状态
+ document.querySelectorAll('.game-tab').forEach(btn => btn.classList.remove('active'));
+ document.querySelectorAll('.char-tab').forEach(btn => btn.classList.remove('active'));
  document.querySelectorAll('.section').forEach(x => x.classList.remove('active'));
  document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
  document.getElementById('sec-all').classList.add('active');
  document.getElementById('btn-myseeds').classList.add('active');
+ // 确保全部按钮是 active
+ const allTabs = document.getElementById('sec-all').querySelectorAll('.game-tab');
+ if (allTabs[0]) allTabs[0].classList.add('active');
  updateGameTabs();
  updateCharTabs();
  renderCurrent();
@@ -1143,9 +1150,10 @@ async function submitImport() {
    return;
  }
  
+ const ascNum = parseInt(difficulty.replace(/^A/i, '')) || 0;
  const { error } = await _sbClient.from('seeds').insert({
  user_id: userId, seed: seed, game: game, character: selectedChar,
- tags: allTags, description: description, victory: result === 'hu', floor_reached: 0
+ tags: allTags, description: description, victory: result === 'hu', floor_reached: 0, ascension: ascNum, difficulty: difficulty
  });
  if (error) { showToast('导入失败：' + error.message); return; }
  
