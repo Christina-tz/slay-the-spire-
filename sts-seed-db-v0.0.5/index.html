@@ -623,10 +623,10 @@ function showGame(game) {
 }
 
 function filterGame(game, filter) {
- _mySeedsMode = false;
  currentGame = game;
  currentFilter = filter;
  currentChar = '';
+ // 注意：不重置 _mySeedsMode，让 renderCurrent 继续按 user_id 过滤
  updateGameTabs();
  updateCharTabs();
  renderCurrent();
