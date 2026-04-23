@@ -657,29 +657,28 @@ function updateCharTabs() {
  });
 }
 
+var _mySeedsMode = false;
 function showMySeeds() {
  if (!currentUserId) { showToast('请先登录'); return; }
- currentGame = 'my';
+ _mySeedsMode = !_mySeedsMode;
+ currentGame = 'all';
  currentFilter = 'all';
  currentChar = '';
  document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
+ if (_mySeedsMode) {
  document.getElementById('btn-myseeds').classList.add('active');
- document.querySelectorAll('.section').forEach(x => x.classList.remove('active'));
- document.getElementById('sec-sts1').classList.add('active');
- document.getElementById('sec-sts2').classList.add('active');
+ } else {
+ document.getElementById('btn-all')?.classList.add('active') || document.querySelector('.nav-btn').classList.add('active');
+ }
  updateGameTabs();
  updateCharTabs();
  renderCurrent();
 }
 
 function renderCurrent() {
- let arr;
- if (currentGame === 'my') {
- arr = seedsData.filter(s => currentUserId && s.user_id === currentUserId);
- } else {
- arr = currentGame === 'all' ? seedsData : seedsData.filter(s => s.game.toLowerCase() === currentGame.toLowerCase());
- }
- const stats = currentGame === 'my' ? { total: arr.length, hu: arr.filter(s => s.label==='hu').length, du: arr.filter(s => s.label==='du').length } : getStats(currentGame);
+ let arr = currentGame === 'all' ? seedsData : seedsData.filter(s => s.game.toLowerCase() === currentGame.toLowerCase());
+ if (_mySeedsMode && currentUserId) arr = arr.filter(s => s.user_id === currentUserId);
+ const stats = getStats(currentGame);
  if (currentFilter !== 'all') {
  arr = arr.filter(s => s.label === currentFilter);
  }
@@ -689,7 +688,7 @@ function renderCurrent() {
  arr = arr.filter(s => s.char === currentChar);
  }
  // 搜索过滤
- const query = currentGame === 'my' ? getMySearchQuery() : getSearchQuery(currentGame);
+ const query = getSearchQuery(currentGame);
  if (query) {
  const q = query.toLowerCase();
  arr = arr.filter(s => {
@@ -701,13 +700,8 @@ function renderCurrent() {
  return false;
  });
  }
- if (currentGame === 'my') {
- render('sts1-cards', arr.filter(s => s.game === 'STS1'));
- render('sts2-cards', arr.filter(s => s.game === 'STS2'));
- } else {
  const containerId = currentGame + '-cards';
  render(containerId, arr);
- }
  setTimeout(loadAllLikes, 200);
 }
 
@@ -717,16 +711,12 @@ function getSearchQuery(game) {
  return el ? el.value.trim() : '';
 }
 
-function getMySearchQuery() {
- return (getSearchQuery('sts1') || getSearchQuery('sts2'));
-}
-
 function onSearch(game) {
  const el = document.getElementById('search-' + game);
  const clearBtn = document.getElementById('clear-' + game);
  if (clearBtn) clearBtn.classList.toggle('visible', el.value.length > 0);
  // 如果当前正在看的就是这个game，重新渲染
- if (game === currentGame || currentGame === 'my') {
+ if (game === currentGame) {
  renderCurrent();
  }
 }
@@ -1239,7 +1229,7 @@ function updateAuthUI(user) {
  document.getElementById('btn-auth').style.display = 'inline-block';
  document.getElementById('btn-myseeds').style.display = 'none';
  document.getElementById('auth-user').style.display = 'none';
- if (currentGame === 'my') showGame('all');
+ if (currentGame === 'my' || _mySeedsMode) { _mySeedsMode = false; showGame('all'); }
  document.getElementById('btn-logout').style.display = 'none';
  }
  // 刷新卡片：登录后显示删除按钮，未登录隐藏
