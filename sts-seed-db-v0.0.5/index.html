@@ -254,6 +254,7 @@ h1{text-align:center;color:#22d3ee;margin-bottom:4px;font-size:26px;letter-spaci
  <button class="nav-btn active" onclick="showGame('all')">全部</button>
  <button class="nav-btn" onclick="showGame('sts1')">杀戮尖塔1</button>
  <button class="nav-btn" onclick="showGame('sts2')">杀戮尖塔2</button>
+ <button class="nav-btn" id="btn-myseeds" onclick="showMySeeds()" style="display:none;margin-left:6px;">🌱 我的种子</button>
 </div>
 
 <div class="auth-bar">
@@ -656,9 +657,29 @@ function updateCharTabs() {
  });
 }
 
+function showMySeeds() {
+ if (!currentUserId) { showToast('请先登录'); return; }
+ currentGame = 'my';
+ currentFilter = 'all';
+ currentChar = '';
+ document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
+ document.getElementById('btn-myseeds').classList.add('active');
+ document.querySelectorAll('.section').forEach(x => x.classList.remove('active'));
+ document.getElementById('sec-sts1').classList.add('active');
+ document.getElementById('sec-sts2').classList.add('active');
+ updateGameTabs();
+ updateCharTabs();
+ renderCurrent();
+}
+
 function renderCurrent() {
- const stats = getStats(currentGame);
- let arr = currentGame === 'all' ? seedsData : seedsData.filter(s => s.game.toLowerCase() === currentGame.toLowerCase());
+ let arr;
+ if (currentGame === 'my') {
+ arr = seedsData.filter(s => currentUserId && s.user_id === currentUserId);
+ } else {
+ arr = currentGame === 'all' ? seedsData : seedsData.filter(s => s.game.toLowerCase() === currentGame.toLowerCase());
+ }
+ const stats = currentGame === 'my' ? { total: arr.length, hu: arr.filter(s => s.label==='hu').length, du: arr.filter(s => s.label==='du').length } : getStats(currentGame);
  if (currentFilter !== 'all') {
  arr = arr.filter(s => s.label === currentFilter);
  }
@@ -668,7 +689,7 @@ function renderCurrent() {
  arr = arr.filter(s => s.char === currentChar);
  }
  // 搜索过滤
- const query = getSearchQuery(currentGame);
+ const query = currentGame === 'my' ? getMySearchQuery() : getSearchQuery(currentGame);
  if (query) {
  const q = query.toLowerCase();
  arr = arr.filter(s => {
@@ -680,8 +701,13 @@ function renderCurrent() {
  return false;
  });
  }
+ if (currentGame === 'my') {
+ render('sts1-cards', arr.filter(s => s.game === 'STS1'));
+ render('sts2-cards', arr.filter(s => s.game === 'STS2'));
+ } else {
  const containerId = currentGame + '-cards';
  render(containerId, arr);
+ }
  setTimeout(loadAllLikes, 200);
 }
 
@@ -691,12 +717,16 @@ function getSearchQuery(game) {
  return el ? el.value.trim() : '';
 }
 
+function getMySearchQuery() {
+ return (getSearchQuery('sts1') || getSearchQuery('sts2'));
+}
+
 function onSearch(game) {
  const el = document.getElementById('search-' + game);
  const clearBtn = document.getElementById('clear-' + game);
  if (clearBtn) clearBtn.classList.toggle('visible', el.value.length > 0);
  // 如果当前正在看的就是这个game，重新渲染
- if (game === currentGame) {
+ if (game === currentGame || currentGame === 'my') {
  renderCurrent();
  }
 }
@@ -755,9 +785,12 @@ function viewSeed(seed) {
  // 简介
  const descEl = document.getElementById('detailDesc');
  if (s.description) {
-   descEl.innerHTML = s.description
-     .replace(/</g,'&lt;').replace(/>/g,'&gt;')
-     .replace(/\!\[image\]\(([^)]+)\)/g, '<img src="$1" loading="lazy" style="max-width:100%;border-radius:8px;margin-top:8px;cursor:pointer;" onclick="window.open(this.src)">');
+   var _desc = s.description.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\!\[image\]\(([^)]+)\)/g, '<img src="$1" style="max-width:100%;border-radius:8px;margin-top:8px;cursor:pointer;" onclick="window.open(this.src)">');
+   console.log('[DEBUG] desc before:', s.description.substring(0,50));
+   console.log('[DEBUG] desc after:', _desc.substring(0,80));
+   console.log('[DEBUG] changed:', _desc !== s.description);
+   descEl.innerHTML = _desc;
+   console.log('[DEBUG] descEl.innerHTML after set:', descEl.innerHTML.substring(0,80));
  } else {
    descEl.textContent = '无';
  }
@@ -1197,13 +1230,16 @@ function updateAuthUI(user) {
  if (user) {
  currentUserId = user.id;
  document.getElementById('btn-auth').style.display = 'none';
+ document.getElementById('btn-myseeds').style.display = 'inline-block';
  document.getElementById('auth-user').style.display = 'inline';
  document.getElementById('auth-user').textContent = '👤 ' + (user.email || user.id).split('@')[0];
  document.getElementById('btn-logout').style.display = 'inline-block';
  } else {
  currentUserId = null;
  document.getElementById('btn-auth').style.display = 'inline-block';
+ document.getElementById('btn-myseeds').style.display = 'none';
  document.getElementById('auth-user').style.display = 'none';
+ if (currentGame === 'my') showGame('all');
  document.getElementById('btn-logout').style.display = 'none';
  }
  // 刷新卡片：登录后显示删除按钮，未登录隐藏
@@ -1221,7 +1257,7 @@ function switchAuthTab(tab) {
  document.getElementById('signup-error').textContent = '';
 }
 
-async async function handleLogin() {
+async function handleLogin() {
  if (!_sbClient || !_sbReady) { document.getElementById("login-error").textContent = "系统加载中，请稍候重试..."; return; }
  const email = document.getElementById('login-email').value.trim();
  const password = document.getElementById('login-password').value;
