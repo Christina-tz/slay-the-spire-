@@ -608,6 +608,7 @@ let currentFilter = 'all';
 let currentChar = '';
 
 function showGame(game) {
+ _mySeedsMode = false;
  currentGame = game;
  currentFilter = 'all';
  currentChar = '';
@@ -621,6 +622,7 @@ function showGame(game) {
 }
 
 function filterGame(game, filter) {
+ _mySeedsMode = false;
  currentGame = game;
  currentFilter = filter;
  currentChar = '';
@@ -660,16 +662,12 @@ function updateCharTabs() {
 var _mySeedsMode = false;
 function showMySeeds() {
  if (!currentUserId) { showToast('请先登录'); return; }
- _mySeedsMode = !_mySeedsMode;
+ _mySeedsMode = true;
  currentGame = 'all';
  currentFilter = 'all';
  currentChar = '';
  document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
- if (_mySeedsMode) {
  document.getElementById('btn-myseeds').classList.add('active');
- } else {
- document.getElementById('btn-all')?.classList.add('active') || document.querySelector('.nav-btn').classList.add('active');
- }
  updateGameTabs();
  updateCharTabs();
  renderCurrent();
