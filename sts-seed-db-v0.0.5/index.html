@@ -244,7 +244,72 @@ h1{text-align:center;color:#22d3ee;margin-bottom:4px;font-size:26px;letter-spaci
 .send-btn{margin-left:auto;padding:4px 12px;background:#2e7d32;border:none;border-radius:4px;color:#fff;cursor:pointer;}
 .send-btn:hover{background:#388e3c;}
 .card-likes{position:absolute;right:8px;bottom:8px;font-size:12px;color:#999;background:rgba(0,0,0,0.6);padding:2px 8px;border-radius:10px;display:flex;align-items:center;gap:3px;}
-.like-icon-mini{font-size:11px;opacity:0.8;}</style>
+.like-icon-mini{font-size:11px;opacity:0.8;}
+/* === 分页 === */
+.pagination-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin: 12px 0 20px;
+  flex-wrap: wrap;
+}
+.pagination-bar .page-btn {
+  background: #252540;
+  border: 1px solid #3a3a5e;
+  color: #aab;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all .2s;
+}
+.pagination-bar .page-btn:hover {
+  background: #334;
+  border-color: #22d3ee;
+  color: #fff;
+}
+.pagination-bar .page-btn.active {
+  background: #22d3ee;
+  color: #0f172a;
+  border-color: #22d3ee;
+  font-weight: 700;
+}
+.pagination-bar .page-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.pagination-bar .page-info {
+  color: #889;
+  font-size: 12px;
+  padding: 0 6px;
+}
+.sort-options {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 6px 0;
+}
+.sort-options .sort-btn {
+  background: #1e1e35;
+  border: 1px solid #3a3a5e;
+  color: #889;
+  padding: 3px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 11px;
+  transition: all .2s;
+}
+.sort-options .sort-btn.active {
+  background: #22d3ee20;
+  border-color: #22d3ee;
+  color: #22d3ee;
+}
+</style>
+
+
+
 </head>
 <body>
 <h1>🎴 STS 种子库</h1>
@@ -277,10 +342,11 @@ h1{text-align:center;color:#22d3ee;margin-bottom:4px;font-size:26px;letter-spaci
  </div>
  <div class="search-bar">
  <span class="search-icon">🔍</span>
- <input class="search-input" id="search-all" placeholder="搜索标签、种子代码..." oninput="onSearch('all')">
+ <input class="search-input" id="search-all" placeholder="搜索标签、种子代码..." autocomplete="off" spellcheck="false" data-lpignore="true" oninput="onSearch('all')">
  <button class="search-clear" id="clear-all" onclick="clearSearch('all')">✕</button>
  </div>
- <div class="cards" id="all-cards"></div>
+ <div class="sort-options" id="sort-all"><span style="color:#889;font-size:11px;">排序：</span><button class="sort-btn active" data-sort="newest" onclick="setSort('newest')">🕐 最新上传</button><button class="sort-btn" data-sort="most_likes" onclick="setSort('most_likes')">❤️ 最多点赞</button></div>
+<div class="cards" id="all-cards"></div>
 </div>
 
 <!-- 杀戮尖塔1 -->
@@ -299,10 +365,11 @@ h1{text-align:center;color:#22d3ee;margin-bottom:4px;font-size:26px;letter-spaci
  </div>
  <div class="search-bar">
  <span class="search-icon">🔍</span>
- <input class="search-input" id="search-sts1" placeholder="搜索标签、种子代码..." oninput="onSearch('sts1')">
+ <input class="search-input" id="search-sts1" placeholder="搜索标签、种子代码..." autocomplete="off" spellcheck="false" data-lpignore="true" oninput="onSearch('sts1')">
  <button class="search-clear" id="clear-sts1" onclick="clearSearch('sts1')">✕</button>
  </div>
- <div class="cards" id="sts1-cards"></div>
+ <div class="sort-options" id="sort-sts1"><span style="color:#889;font-size:11px;">排序：</span><button class="sort-btn active" data-sort="newest" onclick="setSort('newest')">🕐 最新上传</button><button class="sort-btn" data-sort="most_likes" onclick="setSort('most_likes')">❤️ 最多点赞</button></div>
+<div class="cards" id="sts1-cards"></div>
 </div>
 
 <!-- 杀戮尖塔2 -->
@@ -322,10 +389,11 @@ h1{text-align:center;color:#22d3ee;margin-bottom:4px;font-size:26px;letter-spaci
  </div>
  <div class="search-bar">
  <span class="search-icon">🔍</span>
- <input class="search-input" id="search-sts2" placeholder="搜索标签、种子代码..." oninput="onSearch('sts2')">
+ <input class="search-input" id="search-sts2" placeholder="搜索标签、种子代码..." autocomplete="off" spellcheck="false" data-lpignore="true" oninput="onSearch('sts2')">
  <button class="search-clear" id="clear-sts2" onclick="clearSearch('sts2')">✕</button>
  </div>
- <div class="cards" id="sts2-cards"></div>
+ <div class="sort-options" id="sort-sts2"><span style="color:#889;font-size:11px;">排序：</span><button class="sort-btn active" data-sort="newest" onclick="setSort('newest')">🕐 最新上传</button><button class="sort-btn" data-sort="most_likes" onclick="setSort('most_likes')">❤️ 最多点赞</button></div>
+<div class="cards" id="sts2-cards"></div>
 </div>
 
 <!-- 导入模态框 -->
@@ -473,6 +541,11 @@ h1{text-align:center;color:#22d3ee;margin-bottom:4px;font-size:26px;letter-spaci
 </div>
 
 <script>
+// 角色选
+// 角色选
+// 角色选
+// 角色选
+// 角色选
 // 角色选项
 const CHARS_STS1 = [
  {id:'IRONCLAD', name:'战士'},
@@ -508,6 +581,7 @@ let seedsData = [];
 // 从 Supabase 数据库加载用户数据（替换本地数据，保证删掉的种子不再出现）
 async function loadSeedsFromDB() {
  if (!_sbReady) { setTimeout(loadSeedsFromDB, 300); return; }
+ _currentPage = 1;
  const { data, error } = await _sbClient.from('seeds').select('*').order('created_at', { ascending: false });
  if (error) { console.warn('加载种子失败:', error.message); renderCurrent(); return; }
  if (!data || data.length === 0) { renderCurrent(); return; }
@@ -526,7 +600,9 @@ async function loadSeedsFromDB() {
  ascension: row.ascension || 0,
  difficulty: row.difficulty || ('A' + (row.ascension || 0)),
  tags: row.tags || [],
- description: row.description || ''
+ like_count: row.like_count || 0,
+ description: row.description || '',
+ created_at: row.created_at || null
  }));
  // 刷新卡片（删除按钮是否显示取决于当前登录用户）
  sessionStorage.setItem('_sbRerender', '1');
@@ -711,8 +787,25 @@ function renderCurrent() {
  return false;
  });
  }
+ // 排序+分页
+ arr = arr.slice().sort((a, b) => {
+   if (_sortMode === 'newest') {
+     if (!a.created_at) return 1;
+     if (!b.created_at) return -1;
+     return new Date(b.created_at) - new Date(a.created_at);
+   }
+   if (_sortMode === 'oldest') {
+     if (!a.created_at) return 1;
+     if (!b.created_at) return -1;
+     return new Date(a.created_at) - new Date(b.created_at);
+   }
+   if (_sortMode === 'most_likes') return (b.like_count || 0) - (a.like_count || 0);
+   return 0;
+ });
  const containerId = currentGame + '-cards';
- render(containerId, arr);
+ const pagedArr = getPagedData(arr);
+ render(containerId, pagedArr);
+ renderPagination(containerId, arr);
  setTimeout(loadAllLikes, 200);
 }
 
@@ -751,22 +844,19 @@ function copySeed(event, seed) {
 
 async function loadAllLikes() {
   if (!_sbReady || !seedsData.length) return;
-  const ids = seedsData.filter(s => s.id).map(s => s.id);
-  if (!ids.length) return;
-  try {
-    const { data } = await _sbClient.from('likes').select('seed_id').in('seed_id', ids);
-    const counts = {};
-    (data || []).forEach(l => counts[l.seed_id] = (counts[l.seed_id] || 0) + 1);
-    document.querySelectorAll('.card-likes').forEach(el => {
-      const num = el.querySelector('.like-num');
-      const id = el.getAttribute('data-seed-id');
-      if (num && id) {
-        const c = counts[id] || 0;
+  // like_count 已包含在 seedsData 中，直接从内存读取，无需 DB 查询
+  document.querySelectorAll('.card-likes').forEach(el => {
+    const num = el.querySelector('.like-num');
+    const id = el.getAttribute('data-seed-id');
+    if (num && id) {
+      const seedObj = seedsData.find(s => s.id === id);
+      if (seedObj) {
+        const c = seedObj.like_count || 0;
         num.textContent = c;
         if (c > 0) el.classList.add('has-likes');
       }
-    });
-  } catch(e) { console.log('loadAllLikes error:', e); }
+    }
+  });
 }
 function viewSeed(seed) {
  const s = seedsData.find(x => x.seed === seed);
@@ -825,43 +915,46 @@ async function loadLikesAndComments(seedId) {
 }
 
 async function toggleLike() {
-  console.log('toggleLike called, _sbReady:', _sbReady, '_currentSeedId:', _currentSeedId, '_currentLiked:', _currentLiked);
-  if (!_sbReady) { console.log('Supabase not ready'); return; }
-  const user = _sbClient.auth.getUser ? (await _sbClient.auth.getUser()).data.user : null;
-  if (!user) { showToast('请先登录'); return; }
-  if (_currentLiked) return;
-  
+  if (!_sbReady) { return; }
   const btn = document.getElementById('likeBtn');
   const countEl = document.getElementById('likeCount');
+  if (!btn || !countEl) return;
+  if (btn.classList.contains('liked')) { showToast('已经赞过啦~'); return; }
   
-  const { error } = await _sbClient.from('likes').upsert({ seed_id: _currentSeedId, user_id: user.id }, { onConflict: 'seed_id,user_id' });
-  if (!error) {
-    _currentLiked = true;
-    btn.classList.add('liked','animating');
-    countEl.textContent = parseInt(countEl.textContent || '0') + 1;
-    
-    // 弹出+1动画
-    const burst = document.createElement('span');
-    burst.className = 'like-pop-burst';
-    burst.textContent = '+1';
-    burst.style.left = (btn.offsetLeft + btn.offsetWidth / 2 - 10) + 'px';
-    burst.style.top = (btn.offsetTop - 8) + 'px';
-    btn.parentElement.style.position = 'relative';
-    btn.parentElement.appendChild(burst);
-    setTimeout(() => burst.remove(), 700);
-    
-    // 移除动画类
-    setTimeout(() => btn.classList.remove('animating'), 600);
-    
-    // 更新卡片上的数字
-    updateCardLikeNum(_currentSeedId, parseInt(countEl.textContent));
-    
-    showToast('❤️ 点赞成功');
-  } else if (error.code === '23505') {
-    showToast('已经赞过啦~');
-  } else {
-    showToast('点赞失败');
-  }
+  btn.classList.add('animating');
+  const oldNum = parseInt(countEl.textContent) || 0;
+  countEl.textContent = oldNum + 1;
+  
+  // 同时更新种子列表中的 like_count
+  const seedObj = seedsData.find(s => s.id === _currentSeedId);
+  if (seedObj) seedObj.like_count = (seedObj.like_count || 0) + 1;
+  updateCardLikeNum(_currentSeedId, oldNum + 1);
+  
+  // 后台异步更新数据库
+  _sbClient.from('seeds').update({ like_count: oldNum + 1 }).eq('id', _currentSeedId).then(r => {
+    if (r.error) {
+      // 回滚
+      console.error('点赞失败:', r.error);
+      countEl.textContent = oldNum;
+      if (seedObj) seedObj.like_count = oldNum;
+      updateCardLikeNum(_currentSeedId, oldNum);
+    } else {
+      btn.classList.add('liked');
+      // 弹出+1动画
+      const burst = document.createElement('span');
+      burst.className = 'like-pop-burst';
+      burst.textContent = '+1';
+      burst.style.left = (btn.offsetLeft + btn.offsetWidth / 2 - 10) + 'px';
+      burst.style.top = (btn.offsetTop - 8) + 'px';
+      btn.parentElement.style.position = 'relative';
+      btn.parentElement.appendChild(burst);
+      setTimeout(() => burst.remove(), 700);
+      
+      // 异步写入 likes 表（用于统计查询）
+      _sbClient.from('likes').upsert({ seed_id: _currentSeedId, user_id: _currentUserId }, { onConflict: 'seed_id,user_id' }).catch(() => {});
+    }
+  });
+  setTimeout(() => btn.classList.remove('animating'), 600);
 }
 
 function updateCardLikeNum(seedId, num) {
@@ -1352,6 +1445,109 @@ async function logout() {
 
 // 渲染
 renderCurrent();
+
+
+/* === 分页 & 排序 === */
+var PAGE_SIZE = 20;
+var _currentPage = 1;
+var _sortMode = 'newest'; // 默认按上传时间排序
+
+function getPagedData(arr) {
+  _currentPage = Math.min(_currentPage, Math.max(1, Math.ceil(arr.length / PAGE_SIZE)));
+  const start = (_currentPage - 1) * PAGE_SIZE;
+  return arr.slice(start, start + PAGE_SIZE);
+}
+
+function getPageCount(arr) {
+  return Math.max(1, Math.ceil(arr.length / PAGE_SIZE));
+}
+
+function setPage(page) {
+  _currentPage = page;
+  renderCurrent();
+}
+
+function setSort(mode) {
+  _sortMode = mode;
+  _currentPage = 1;
+  document.querySelectorAll('.sort-btn').forEach(function(b) {
+    b.classList.toggle('active', b.getAttribute('data-sort') === mode);
+  });
+  renderCurrent();
+}
+
+function renderPagination(containerId, arr) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const totalPages = getPageCount(arr);
+  const oldP = container.parentNode.querySelector('.pagination-bar');
+  if (oldP) oldP.remove();
+
+  const bar = document.createElement('div');
+  bar.className = 'pagination-bar';
+
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'page-btn';
+  prevBtn.textContent = '\u2039';
+  prevBtn.disabled = _currentPage <= 1;
+  prevBtn.onclick = function(){ if (_currentPage > 1) setPage(_currentPage - 1); };
+  bar.appendChild(prevBtn);
+
+  const maxVisible = 7;
+  let startPage = Math.max(1, _currentPage - Math.floor(maxVisible / 2));
+  let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+  if (endPage - startPage + 1 < maxVisible) startPage = Math.max(1, endPage - maxVisible + 1);
+
+  if (startPage > 1) {
+    const firstBtn = document.createElement('button');
+    firstBtn.className = 'page-btn';
+    firstBtn.textContent = '1';
+    firstBtn.onclick = function(){ setPage(1); };
+    bar.appendChild(firstBtn);
+    if (startPage > 2) {
+      const dots = document.createElement('span');
+      dots.textContent = '...';
+      dots.style.cssText = 'color:#667;font-size:12px;padding:0 2px;';
+      bar.appendChild(dots);
+    }
+  }
+
+  for (let i = startPage; i <= endPage; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'page-btn' + (i === _currentPage ? ' active' : '');
+    btn.textContent = '' + i;
+    btn.onclick = function(p){ return function(){ setPage(p); }; }(i);
+    bar.appendChild(btn);
+  }
+
+  if (endPage < totalPages) {
+    if (endPage < totalPages - 1) {
+      const dots = document.createElement('span');
+      dots.textContent = '...';
+      dots.style.cssText = 'color:#667;font-size:12px;padding:0 2px;';
+      bar.appendChild(dots);
+    }
+    const lastBtn = document.createElement('button');
+    lastBtn.className = 'page-btn';
+    lastBtn.textContent = '' + totalPages;
+    lastBtn.onclick = function(){ setPage(totalPages); };
+    bar.appendChild(lastBtn);
+  }
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'page-btn';
+  nextBtn.textContent = '\u203a';
+  nextBtn.disabled = _currentPage >= totalPages;
+  nextBtn.onclick = function(){ if (_currentPage < totalPages) setPage(_currentPage + 1); };
+  bar.appendChild(nextBtn);
+
+  const info = document.createElement('span');
+  info.className = 'page-info';
+  info.textContent = _currentPage + '/' + totalPages + ' (共' + arr.length + '个种子)';
+  bar.appendChild(info);
+
+  container.parentNode.insertBefore(bar, container.nextSibling);
+}
 </script>
 
 <button class="donate-btn" onclick="document.getElementById('donateOverlay').classList.add('active')">☕</button>
