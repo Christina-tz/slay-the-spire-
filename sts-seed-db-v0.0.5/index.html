@@ -306,7 +306,8 @@ h1{text-align:center;color:#22d3ee;margin-bottom:4px;font-size:26px;letter-spaci
   border-color: #22d3ee;
   color: #22d3ee;
 }
-</style>
+
+.game-badge{display:inline-block;background:#2a2a44;color:#a0a0d0;font-size:11px;padding:1px 6px;border-radius:3px;margin-right:4px}.floor-badge{color:#8888aa;font-size:11px}</style>
 
 
 
@@ -621,6 +622,8 @@ function getStats(game) {
 // 渲染卡片
 function makeCard(s) {
  const charMap = {IRONCLAD:'铁甲',THE_SILENT:'静默',SILENT:'静默',DEFECT:'机器人',WATCHER:'观者',CHAMPION:'储君',REGENT:'储君',NECROBINDER:'亡灵'};
+ const gameMap = {sts1:'STS1',sts2:'STS2'};
+ const gameLabel = gameMap[s.game] || s.game.toUpperCase();
  const cl = charMap[s.char] || s.char;
  const diff = s.difficulty || '低';
  const hudu = s.label === 'hu' ? '胡种' : '毒种';
@@ -639,7 +642,7 @@ function makeCard(s) {
  '<div class="card-top"><div class="char-difficulty"><span class="char-badge">'+cl+'</span><span class="diff-badge">'+diff+'</span></div><span class="hudu '+huduClass+'">'+hudu+'</span>'+deleteBtn+'</div>' +
  '<div class="seed-seed"><span class="seed-num">'+s.seed+'</span><span class="btn-copy" data-action="copy">📋 复制</span></div>' +
  tagsHtml + descHtml +
- '<div class="meta">'+s.game + (s.floor ? ' · '+s.floor+'层' : '')+'</div>' +
+ '<div class="meta"><span class="game-badge">'+gameLabel+'</span>'+(s.floor ? '<span class="floor-badge">'+s.floor+'层</span>' : '')+'</div>' +
  '<div class="card-likes" data-seed-id="'+(s.id||'')+'"><svg class="card-like-icon" viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg><span class="like-num">-</span></div></div>';
 }
 
